@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class MinerConfig(AppConfig):
+class NodeserverConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'miner'
+    name = 'nodeserver'
