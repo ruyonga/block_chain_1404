@@ -25,17 +25,14 @@ def new_transaction(request):
     tx_data = json.loads(request.body.decode('utf-8'))
     required_fields = ["author", "content"]
 
-    print(tx_data)
-
     for field in required_fields:
         if not tx_data.get(field):
             return "Invalid transaction data", 400
 
     tx_data["timestamp"] = time.time()
-
     blockchain.add_new_transaction(tx_data)
 
-    return "success", 201
+    return JsonResponse({"massage": "Transaction added successfuly", "status_code": 201})
 
 
 # View to return the current chain
@@ -55,7 +52,7 @@ def mine_unconfirmed_transactions(request):
     result = blockchain.mine()
 
     if not result:
-        return "No transactions to mine"
+        return HttpResponse("No transactions to mine")
     else:
         # Making sure we have the longest chain before anouncing to the network
         chain_length = len(blockchain.chain)
@@ -63,12 +60,12 @@ def mine_unconfirmed_transactions(request):
         if chain_length == len(blockchain.chain):
             # announce the recently mined block to the netwrork
             announce_new_block(blockchain.last_block)
-        return "Block #{} is mined".format(blockchain.last_block.index)
+        return HttpResponse("Block #{} is mined".format(blockchain.last_block.index))
 
-
+@csrf_exempt
 def register_new_peers(request):
 
-    node_address = request.get_json()["node_address"]
+    node_address = request.POST["node_address"]
 
     if not node_address:
         return "Invalid data", 400
@@ -79,14 +76,14 @@ def register_new_peers(request):
     # so the he can sync
     return get_chain()
 
-
+@csrf_exempt
 def register_with_existing_node(request):
     """
     Internally calls the 'register_node' endpoint to
     register current node with the node specified in the
     request, and sync the blockchain as well as peer data
     """
-    node_address = request.get_json()["node_address"]
+    node_address = request.POST["node_address"]
     if not node_address:
         return "Invalid data", 400
 
@@ -94,7 +91,7 @@ def register_with_existing_node(request):
     headers = {'Content-Type': "application/json"}
 
     # Make a request to register with remode node and obtain information
-    response = request.post(node_address + "/register_node",
+    response = requests.post(node_address + "/api/register_node",
                             data=json.dumps(data), headers=headers)
 
     if response.status_code == 200:
@@ -129,7 +126,7 @@ def create_chain_from_dump(chain_dump):
 
 
 def verify_and_add_block(request):
-    block_data = request.get_json()
+    block_data = request.POST
     block = Block(block_data["index"],
                   block_data["transactions"],
                   block_data["timestamp"],
@@ -139,14 +136,14 @@ def verify_and_add_block(request):
     added = blockchain.add_block(block, proof)
 
     if not added:
-        return "The block was discarded by the node", 400
-    return "Block added to the chain", 201
+        return HttpResponse("The block was discarded by the node", 400)
+    return HttpResponse("Block added to the chain", 201)
 
 # endpoint to query unconfirmed transactions
 
 
 def get_pending_txns(request):
-    return json.dumps(blockchain.unconfirmed_transactions)
+    return JsonResponse(blockchain.unconfirmed_transactions, safe=False)
 
 
 def consensus():
@@ -159,7 +156,7 @@ def consensus():
 
     for node in peers:
 
-        responses = redirect("{}chain".format(node))
+        responses = redirect("{}/api/chain".format(node))
 
         length = responses.json()["length"]
         chain = responses.json()["chain"]
@@ -180,7 +177,7 @@ def announce_new_block(block):
     Other nodes can simply verify the proof of work and add it to their respective chain
     """
     for peer in peers:
-        url = "{}add_block".format(peer)
+        url = "{}/api/add_block".format(peer)
         headers = {'Content-Type': "application/json"}
         try:
             # Make the POST request

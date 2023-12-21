@@ -65,7 +65,6 @@ class Blockchain:
     def add_new_transaction(self, transaction):
         self.unconfirmed_transactions.append(transaction)
         
-        
     @classmethod
     def is_valid_proof(cls, block, block_hash):
     

@@ -62,7 +62,7 @@ def create_transaction(request):
     new_tx_address = "{}/api/new_transaction/".format(CONNECTED_NODE_ADDRESS)
     response = requests.post(new_tx_address, json=post_object, headers={
                   'Content-type': 'application/json'})
-    if response.status_code == 201:
+    if response.status_code == 200:
         messages.add_message(request, messages.SUCCESS,
                          "Transaction added successfully")
     else:
