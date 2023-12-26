@@ -1,6 +1,7 @@
+from django.urls import reverse
 from .block import Block
 from .blockchain import Blockchain
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
 from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -61,20 +62,28 @@ def mine_unconfirmed_transactions(request):
             # announce the recently mined block to the netwrork
             announce_new_block(blockchain.last_block)
         return HttpResponse("Block #{} is mined".format(blockchain.last_block.index))
+    
 
+#TODO handling csrf security issue via api
 @csrf_exempt
 def register_new_peers(request):
+    print("step 3")
 
-    node_address = request.POST["node_address"]
+    node_address = request.POST['node_address']
+
 
     if not node_address:
-        return "Invalid data", 400
+        return HttpResponseNotFound("Missing peer node address")
 
     # Add the node to the peer list
     peers.add(node_address)
     # Return the consensus blockchain to the newly registered node
     # so the he can sync
-    return get_chain()
+
+    #Build url to get chain view
+
+    redirect_url = reverse("get-chain")
+    return HttpResponseRedirect(redirect_url)
 
 @csrf_exempt
 def register_with_existing_node(request):
@@ -83,17 +92,21 @@ def register_with_existing_node(request):
     register current node with the node specified in the
     request, and sync the blockchain as well as peer data
     """
-    node_address = request.POST["node_address"]
-    if not node_address:
-        return "Invalid data", 400
+    node_address = request.POST['node_address']
 
-    data = {"node_address": request.host_url}
+    if not node_address:
+        return HttpResponseNotFound("Node address is missing")
+
+    data = dict({"node_address": "http://"+request.META['HTTP_HOST']})
     headers = {'Content-Type': "application/json"}
+    print("step 2=======>")
+    print("step 2=======> "+node_address + "/api/register_node")
 
     # Make a request to register with remode node and obtain information
     response = requests.post(node_address + "/api/register_node",
-                            data=json.dumps(data), headers=headers)
+                             data=data, headers=headers)
 
+    print(response)
     if response.status_code == 200:
         global blockchain
         global peers
@@ -136,7 +149,7 @@ def verify_and_add_block(request):
     added = blockchain.add_block(block, proof)
 
     if not added:
-        return HttpResponse("The block was discarded by the node", 400)
+        return HttpResponseNotFound("The block was discarded by the node", 400)
     return HttpResponse("Block added to the chain", 201)
 
 # endpoint to query unconfirmed transactions
@@ -156,7 +169,7 @@ def consensus():
 
     for node in peers:
 
-        responses = redirect("{}/api/chain".format(node))
+        responses = HttpResponseRedirect(f"{node}/api/chain")
 
         length = responses.json()["length"]
         chain = responses.json()["chain"]
@@ -189,6 +202,6 @@ def announce_new_block(block):
                 return HttpResponse(f"POST request successful. Response: {content}")
             else:
                 return HttpResponse(f"POST request failed. Status code: {response.status_code}")
-        except requests.exceptions.RequestException as e:
+        except requests.RequestException as e:
             # Handle exceptions (e.g., connection error, timeout)
-            return HttpResponse(f"An error occurred: {e}")
+            return HttpResponse(f"An　error occurred: {e}")

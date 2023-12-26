@@ -8,7 +8,7 @@ import json
 
 
 # The node with which our application interacts, there can be mulitple such nodes aswell
-CONNECTED_NODE_ADDRESS = "http://127.0.0.1:8000"
+CONNECTED_NODE_ADDRESS = "http://192.168.1.20:8000"
 
 posts = []
 
@@ -18,7 +18,7 @@ def fetch_posts():
     This functions to fetch the chain from the blockchain node, parse the data and stores it locally
 
     """
-    get_chain_address = "{}/api/chain".format(CONNECTED_NODE_ADDRESS)
+    get_chain_address = f"{CONNECTED_NODE_ADDRESS}/api/chain"
     response = requests.get(get_chain_address)
 
     if response.status_code == 200:
