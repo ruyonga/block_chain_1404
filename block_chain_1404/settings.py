@@ -27,11 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
-    'nodeserver.apps.NodeserverConfig',
     'client.apps.ClientConfig',
     'django.contrib.admin',
     'django.contrib.auth',

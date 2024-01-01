@@ -28,8 +28,9 @@ class Blockchain:
     
     def add_block(self, block, proof):
         """
-        A function that adds a vlock to the chain after verification.
-        Verification includes;
+        A function that adds a block to the chain after verification.
+        
+        #Verification includes;
         * Checking if the proof is valid
         * The previous_hash referred in the block and the hash of the latest block in the chain match
         """

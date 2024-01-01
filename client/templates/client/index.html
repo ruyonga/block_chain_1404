@@ -5,13 +5,14 @@
 <div class="left-section">
 	<center>
 		<h2> Create Transaction</h2>
-		<form action="{% url 'client:create_transaction' %}" method="post">
+		<form action="{% url 'client:create-transaction' %}" method="post">
 			{% csrf_token %}
-			<textarea name="content" rows="4" cols="50"></textarea>
-			<br />
-			<input type="text" name="author" placeholder="Your name">
-			<br/>
-			<input type="submit" value="Post">
+			<input type="text" id="username" name="author" placeholder="Your name">
+		
+			<textarea name="content" rows="4" cols="80" placeholder="message"></textarea>
+		
+			<button type="submit" value="Post"> Submit</button>
+
 		</form>
 	</center>
 </div>
@@ -40,6 +41,8 @@
 		{% else %}
 		<p>No Trasactions</p>
 		{% endif %}
+		<a href="{{node_address}}/mine"><button>Request to mine</button></a>
+		<a href="{% url 'client:index' %}"><button>Resync</button></a>
 	</div>
 
 </div>

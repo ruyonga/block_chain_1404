@@ -16,6 +16,7 @@
             flex: 1;
             height: 100%;
             border: 1px solid #ccc;
+            padding: 2%;
         }
 
         .post_box {
@@ -80,6 +81,33 @@
             height: 42px;
         }
 
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -88,16 +116,13 @@
         <div class="header">
             <center>
 
-                <a href="{% url 'client:index' %}">Home</a> ||
-                <a href="{{node_address}}/api/mine"><button>Request to mine</button></a> ||
-                <a href="{% url 'client:index' %}"><button>Resync</button></a>
-                <br />
+                <a href="{% url 'client:index' %}">Home</a>
+               
                 <h1> {{ title }}</h1>
 
             </center>
-           
+
         </div>
-        <hr />
         {% if messages %}
         <ul class="messages">
             {% for message in messages %}
@@ -111,7 +136,7 @@
         <br />
         {% block content %}
         {% endblock %}
-    </container>
+        </container>
 
 
 
