@@ -1,13 +1,13 @@
-from django.urls import reverse
-from .block import Block
-from .blockchain import Blockchain
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
-from django.http import JsonResponse
-from django.shortcuts import redirect
-from django.views.decorators.csrf import csrf_exempt
 import json
 import time
 import requests
+from django.urls import reverse
+from django.http import JsonResponse, HttpResponse, HttpResponseNotFound, HttpResponseRedirect, HttpResponseServerError
+from datetime import datetime
+from django.views.decorators.csrf import csrf_exempt
+from .block import Block
+from .blockchain import Blockchain
+
 
 # Create your views here.
 
@@ -97,16 +97,13 @@ def register_with_existing_node(request):
     if not node_address:
         return HttpResponseNotFound("Node address is missing")
 
-    data = dict({"node_address": "http://"+request.META['HTTP_HOST']})
+    data = {"node_address": "http://"+request.META['HTTP_HOST']}
     headers = {'Content-Type': "application/json"}
-    print("step 2=======>")
-    print("step 2=======> "+node_address + "/api/register_node")
 
     # Make a request to register with remode node and obtain information
     response = requests.post(node_address + "/api/register_node",
                              data=data, headers=headers)
-
-    print(response)
+    
     if response.status_code == 200:
         global blockchain
         global peers
@@ -204,4 +201,4 @@ def announce_new_block(block):
                 return HttpResponse(f"POST request failed. Status code: {response.status_code}")
         except requests.RequestException as e:
             # Handle exceptions (e.g., connection error, timeout)
-            return HttpResponse(f"An　error occurred: {e}")
+            return HttpResponse(f"Anerror occurred: {e}")

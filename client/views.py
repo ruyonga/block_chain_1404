@@ -8,7 +8,7 @@ import json
 
 
 # The node with which our application interacts, there can be mulitple such nodes aswell
-CONNECTED_NODE_ADDRESS = "http://192.168.1.20:8000"
+CONNECTED_NODE_ADDRESS = "http://127.0.0.1:8000"
 
 posts = []
 
@@ -31,19 +31,25 @@ def fetch_posts():
             for tx in block["transcations"]:
                 tx["index"] = block["index"]
                 tx["hash"] = block["previous_hash"]
+                tx['timestamp'] = timestamp_to_string(tx['timestamp'])
                 content.append(tx)
 
         global posts
         posts = sorted(content, key=lambda k: k['timestamp'], reverse=True)
+        
+
+
+        
+
 
 
 def index(request):
     """
     Home page of the application
     """
-    fetch_posts()
+    print(fetch_posts())
     context = {"title": 'YourNet: Decenteralised content shaing',  "posts": posts,
-               "node_address": CONNECTED_NODE_ADDRESS, "readable_time": timestamp_to_string}
+               "node_address": CONNECTED_NODE_ADDRESS}
     return render(request, "client/index.html", context)
 
 

@@ -2,30 +2,120 @@
 
 <head>
     <title> {{ title }}</title>
+    <style>
+        .main {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        .left-section,
+        .right-section {
+            flex: 1;
+            height: 100%;
+            border: 1px solid #ccc;
+        }
+
+        .post_box {
+            background: #fff;
+            padding: 12px 0px 0px 12px;
+            margin-top: 0px;
+            margin-bottom: 8px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .post_box-header {
+            padding-bottom: 12px;
+        }
+
+        .post_box-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 22px;
+            float: left;
+            margin-right: 16px;
+            border: 1px solid #fff;
+            box-shadow: 0px 0px 0px 2px #f00;
+        }
+
+        .post_box-avatar::after {
+            content: "";
+            display: block;
+        }
+
+        .post_box-name {
+            font-weight: bold;
+        }
+
+        .post_box-subtitle {
+            color: #777;
+        }
+
+        .post_box-body {
+            margin-top: 16px;
+            margin-bottom: 8px;
+        }
+
+        .post_box-options {
+            float: right;
+        }
+
+        .option-btn {
+            background: #f8f8f8;
+            border: none;
+            color: #2c3e50;
+            padding: 7px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 2px;
+            margin-right: 2px;
+            outline: none;
+            height: 42px;
+        }
+
+    </style>
 </head>
 
 <body>
+    <div class="main-body">
+        <div class="header">
+            <center>
 
-    <div>
-        <a href="{% url 'client:index' %}" >Home</a>
-    </div>
-    <center>
-        <h1> {{ title }}</h1>
-    </center>
-    <hr />
-    {% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
-            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
-            {{ message }}
-        </li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-   
-    {% block content %}
-    {% endblock %}
+                <a href="{% url 'client:index' %}">Home</a> ||
+                <a href="{{node_address}}/api/mine"><button>Request to mine</button></a> ||
+                <a href="{% url 'client:index' %}"><button>Resync</button></a>
+                <br />
+                <h1> {{ title }}</h1>
+
+            </center>
+           
+        </div>
+        <hr />
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}Important: {% endif %}
+                {{ message }}
+                </li>
+                {% endfor %}
+        </ul>
+        {% endif %}
+        <br />
+        {% block content %}
+        {% endblock %}
+    </container>
+
+
+
+
 </body>
 
 </html>
